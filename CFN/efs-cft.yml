@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  
+Parameters:
+  InputSubnetIds:
+    Description: Enter up to 3 subnet ID
+    Type: List<AWS::EC2::Subnet::Id>
+  
+Resources:
+  MyEFS:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      Encrypted: true
+      PerformanceMode: generalPurpose
+      ThroughputMode: bursting
+  
+  MyEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: EC@ Security Group
+      SecurityGroupIngress: 
+        - 
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId:  !Ref: InputVPC
+      
+      Tags: 
+        - Tag
+      VpcId: String
+
+  MyMountTarget1:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !!GetAtt MyEFS.FileSystemId
+      SecurityGroups: # Required
+        SecurityGroups
+      SubnetId: !Select [ 0 , !Ref InputSubnetIds]
+
+  MyMountTarget2:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !!GetAtt MyEFS.FileSystemId
+      SecurityGroups: # Required
+        SecurityGroups
+      SubnetId: !Select [ 1 , !Ref InputSubnetIds]
+  MyMountTarget3:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !!GetAtt MyEFS.FileSystemId
+      SecurityGroups: # Required
+        SecurityGroups
+      SubnetId: !Select [ 2 , !Ref InputSubnetIds]
+
+Outputs:
